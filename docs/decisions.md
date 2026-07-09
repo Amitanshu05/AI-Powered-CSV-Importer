@@ -55,6 +55,21 @@ Format: **Decision → Alternatives considered → Reason**
   now). Vercel is the standard for Next.js deployment. Tradeoff: Render free tier cold-starts
   after inactivity (~30-60s first request) — documented in README so it doesn't read as a bug.
 
+### 9. Swapped ts-node-dev → tsx for dev server
+- **Alternatives:** ts-node-dev (originally planned), nodemon + ts-node
+- **Reason:** ts-node-dev is effectively unmaintained and broke immediately against a
+  newer TypeScript version resolved during install (TypeScript 7.0 preview), throwing
+  a cryptic `Cannot read properties of undefined (reading 'fileExists')` error. Switched
+  to `tsx`, which is actively maintained, faster (esbuild-based), and required zero
+  extra config. Also pinned `typescript@^5.6.0` explicitly to avoid accidentally
+  installing a preview/unstable version again.
+
+### 10. Removed explicit `moduleResolution` from tsconfig.json
+- **Alternatives:** Keep `"moduleResolution": "node"` (deprecated alias for `node10`)
+- **Reason:** TypeScript warned this option is deprecated and will stop working in TS 7.
+  With `"module": "commonjs"` already set, TypeScript infers the correct classic Node
+  resolution automatically — so the explicit (deprecated) setting was simply removed.
+
 ---
 
 *Add new entries below as they come up during the build (batching strategy specifics,

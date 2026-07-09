@@ -9,7 +9,7 @@ Deadline: 12 July 2026
 
 ---
 
-## Current Phase: Phase 1 — Backend Core (in progress)
+## Current Phase: Phase 2 — AI Pipeline (starting next)
 
 ## Stack Locked
 - Frontend: Next.js 14 (App Router) + TypeScript + Tailwind + shadcn/ui + TanStack Table/Query + PapaParse
@@ -22,13 +22,19 @@ Deadline: 12 July 2026
 - **Phase 0 — Setup & Docs:** repo created (monorepo: frontend/, backend/, docs/), .gitignore
   configured, Gemini API key obtained and stored in backend/.env (not committed),
   .env.example committed, contract.md / architecture.md / decisions.md all drafted and pushed.
+- **Phase 1 — Backend Core:** Express + TypeScript scaffolded (strict mode), `config/env.ts`
+  (fail-fast Zod validation of env vars, tested working), `config/logger.ts` (pino, pretty
+  in dev), `config/app-error.ts` + `middleware/error-handler.ts` (centralized error handling
+  matching contract.md's error shape), `schemas/crm-record.schema.ts` (mirrors contract.md
+  exactly), minimal `app.ts` with `/api/health` verified returning 200. Two debugging fixes
+  along the way, logged in decisions.md #9-10: swapped ts-node-dev → tsx (unmaintained,
+  broke against TS 7.0 preview), removed deprecated `moduleResolution` from tsconfig.json.
 
 ## In Progress
-- **Phase 1 — Backend Core:** about to scaffold Express + TypeScript project, set up
-  config/env.ts, error-handling middleware, pino logging, and crm-record.schema.ts.
+- **Phase 2 — AI Pipeline:** not yet started. Next: get a single CSV row through Gemini
+  structured output end-to-end.
 
 ## Not Started Yet
-- Phase 2 — AI Pipeline (single row, dumb version)
 - Phase 3 — Batching & Robustness
 - Phase 4 — Backend API Surface
 - Phase 5 — Frontend Core Flow
@@ -47,13 +53,16 @@ Deadline: 12 July 2026
 6. TanStack Table/Query on frontend
 7. Frontend parses CSV locally; backend never touches raw file
 8. Render + Vercel for deployment
+9. tsx instead of ts-node-dev (unmaintained, broke against TS 7.0 preview)
+10. Removed deprecated `moduleResolution` config (inferred automatically from `module: commonjs`)
 
 ## Known Issues / Open Questions
-- None yet.
+- None currently.
 
 ## Next Immediate Step
-Scaffold `backend/` — Express + TypeScript init, then config/env.ts as the first real file
-(fail-fast validation of GEMINI_API_KEY at startup).
+Phase 2: write the Gemini prompt for CRM field extraction (using the field rules from the
+assignment doc — enums, note-appending, date format), get ONE row through end-to-end
+(raw row JSON → Gemini call → structured JSON output → manual Zod validation check).
 
 ---
 
