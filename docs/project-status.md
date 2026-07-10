@@ -9,7 +9,7 @@ Deadline: 12 July 2026
 
 ---
 
-## Current Phase: Phase 4 — Backend API Surface (starting next)
+## Current Phase: Phase 5 — Frontend Core Flow (starting next)
 
 ## Stack Locked
 - Frontend: Next.js 14 (App Router) + TypeScript + Tailwind + shadcn/ui + TanStack Table/Query + PapaParse
@@ -51,14 +51,18 @@ Deadline: 12 July 2026
   (not an AI guess) when the AI correctly reports null. Also enforced phone-number
   digit-only formatting in code rather than trusting AI prompt compliance. Both fixes
   re-verified via a second `npm run test:batch` run — confirmed working correctly.
+- **Phase 4 — Backend API Surface:** `controllers/import.controller.ts` (thin HTTP layer —
+  validates request against `ImportRequestSchema`, calls `processRows()`, shapes response
+  exactly per contract.md, distinguishes EMPTY_ROWS/INVALID_PAYLOAD/AI_PROVIDER_ERROR)
+  and `routes/import.routes.ts` (mounts POST /import), wired into `app.ts` under `/api`.
+  Verified via real HTTP requests (PowerShell Invoke-RestMethod): success case returned
+  correct imported/skipped shape, EMPTY_ROWS error case returned correct 400 + error body.
+  No issues found this phase.
 
 ## In Progress
-- **Phase 4 — Backend API Surface:** not yet started. Next: build `POST /api/import`
-  route wired to `batch.service.ts`'s `processRows()`, matching `contract.md`'s
-  request/response shape exactly, tested manually with real sample CSV data.
+- **Phase 5 — Frontend Core Flow:** not yet started.
 
 ## Not Started Yet
-- Phase 5 — Frontend Core Flow
 - Phase 6 — Polish & Bonus Points
 - Phase 7 — Dockerize
 - Phase 8 — Deploy
@@ -91,10 +95,8 @@ Deadline: 12 July 2026
   regardless, as a general resilience measure, not just a workaround for that issue.
 
 ## Next Immediate Step
-Phase 4: build the `POST /api/import` Express route — controller calls
-`batch.service.ts`'s `processRows()`, request validated against `ImportRequestSchema`,
-response shaped exactly per `contract.md` §2. Manual test with real sample CSV data
-via Postman/Thunder Client or a simple curl/PowerShell request.
+Phase 5: scaffold Next.js frontend (TypeScript + Tailwind + shadcn/ui), build the
+upload → local CSV preview → confirm → results flow, wired to POST /api/import.
 
 ---
 

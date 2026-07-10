@@ -3,6 +3,7 @@ import cors from "cors";
 import { env } from "./config/env";
 import { logger } from "./config/logger";
 import { errorHandler } from "./middleware/error-handler";
+import importRoutes from "./routes/import.routes";
 
 const app = express();
 
@@ -13,7 +14,9 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-// Routes will be mounted here in Phase 4 (POST /api/import)
+// Phase 4: real endpoint. Mounted under /api, so POST /import here becomes
+// POST /api/import — matching contract.md exactly.
+app.use("/api", importRoutes);
 
 // Error handler must be registered LAST
 app.use(errorHandler);

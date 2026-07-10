@@ -61,10 +61,10 @@ Legend: [ ] pending · [~] in progress · [x] done
 
 ## Phase 4 — Backend API Surface (Day 2)
 
-- [ ] Build `POST /api/import` — accepts parsed rows, returns extracted CRM records + skip summary
-- [ ] Wire controller → services, confirm contract.md matches actual implementation
-- [ ] Manual test via Postman/Thunder Client with real sample CSVs
-- [ ] Commit: `feat: import API endpoint complete`
+- [x] Build `POST /api/import` — accepts parsed rows, returns extracted CRM records + skip summary
+- [x] Wire controller → services, confirm contract.md matches actual implementation
+- [x] Manual test via PowerShell Invoke-RestMethod with real sample data (success case + EMPTY_ROWS error case both verified)
+- [x] Commit: `feat: import API endpoint complete`
 
 ## Phase 5 — Frontend Core Flow (Day 2 evening – Day 3 morning)
 
