@@ -72,5 +72,24 @@ Format: **Decision → Alternatives considered → Reason**
 
 ---
 
+### 11. Model changes during Phase 2 build
+- **What changed:** Originally specified gemini-2.5-flash (Decision #3) — confirmed
+  retired by Google (June 17, 2026) via live 404 during testing. gemini-2.5-flash-lite
+  also confirmed retired (separate live 404). Landed on gemini-3.1-flash-lite as
+  primary, with gemini-3.5-flash kept as a secondary fallback.
+- **Why not gemini-3.5-flash as primary:** Should be the stronger model, but returned
+  persistent 503 errors across ~13 hours of spaced-out attempts today — consistent
+  with reports of a free-tier-specific capacity issue with this model (not a code bug).
+  Revisit once confirmed stable again.
+- **Retry/fallback logic added:** Pulled forward a small piece of Phase 3's planned
+  "batch-level retry with exponential backoff" (architecture.md §5) — scoped to this
+  one call, not the full batch retry system, just to unblock Phase 2 testing today.
+- **Schema fix (the real bug):** Gemini's responseSchema only had "created_at" marked
+  required — every other field was optional at the JSON-Schema level, so the model
+  (esp. the lite tier) would sometimes omit fields entirely instead of extracting them,
+  even when the source data was clearly present (e.g. email, city). Fix: marked every
+  field as required in responseSchema (still nullable, so null remains valid) — this
+  is what actually fixed extraction quality, not the model swap.
+
 *Add new entries below as they come up during the build (batching strategy specifics,
 retry counts, prompt design choices worth recording, etc.).*

@@ -4,15 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev": "tsx watch src/app.ts",
-  "build": "tsc",
-  "start": "node dist/app.js"
+    "dev": "tsx watch src/app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "test:single-row": "tsx src/scripts/test-single-row.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@google/genai": "^2.10.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
