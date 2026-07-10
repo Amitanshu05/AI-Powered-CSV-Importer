@@ -19,7 +19,13 @@ export const DataSourceEnum = z.enum([
 ]);
 
 export const CrmRecordSchema = z.object({
-  created_at: z.string(),
+  // NOTE: nullable here (was previously non-nullable) — see decisions.md #16.
+  // The AI is allowed to say "no date found" (null) instead of being structurally
+  // forced to invent one. batch.service.ts fills a real fallback timestamp in code
+  // when this comes back null, so the FINAL record returned to the frontend still
+  // always has a usable created_at — the nullability exists at the AI-output
+  // validation boundary, not in what the API ultimately returns.
+  created_at: z.string().nullable(),
   name: z.string().nullable(),
   email: z.string().email().nullable(),
   country_code: z.string().nullable(),

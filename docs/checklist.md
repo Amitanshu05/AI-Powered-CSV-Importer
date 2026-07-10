@@ -24,7 +24,7 @@ Legend: [ ] pending · [~] in progress · [x] done
 - [x] Set up `config/env.ts` with validated env vars (Zod)
 - [x] Set up centralized error-handling middleware
 - [x] Set up `pino` logging
-- [x] Build `schemas/crm-record.schema.ts` (Zod schema matching contract.md)
+- [x] Build `schemas/crm-record.schema.ts` (matching contract.md)
 - [x] Commit: `feat: backend scaffold + config + error handling`
 
 ## Phase 2 — AI Pipeline (single row, dumb version first) (Day 1 evening – Day 2 morning)
@@ -41,18 +41,23 @@ Legend: [ ] pending · [~] in progress · [x] done
 
 ## Phase 3 — Batching & Robustness (Day 2)
 
-- [ ] Extract into `AIProviderService` (interface + Gemini implementation)
-- [ ] Make model names configurable via env vars (`GEMINI_PRIMARY_MODEL`,
-      `GEMINI_FALLBACK_MODEL`) instead of hardcoded — added after hitting two
-      live model retirements in one day during Phase 2
-- [ ] Extract into `BatchService`: chunking by token estimate, concurrency limit (p-limit)
-- [ ] Add retry with exponential backoff on batch failure
-- [ ] Add row-level validation/skip logic (skip if no email AND no mobile)
-- [ ] Add skip reason surfaced in response payload
-- [ ] Handle multi-email / multi-mobile → append to `crm_note`
-- [ ] Handle newline escaping in `crm_note` for CSV safety
-- [ ] Test with a messy multi-format CSV (different headers, missing fields, embedded commas)
-- [ ] Commit: `feat: batch processing, retry, validation layer`
+- [x] Extract into `AIProviderService` (interface + Gemini implementation)
+- [x] Make model names configurable via env vars (`GEMINI_PRIMARY_MODEL`,
+      `GEMINI_FALLBACK_MODEL`) instead of hardcoded
+- [x] Extract into `BatchService`: chunking by row count, concurrency limit (p-limit)
+- [x] Add retry with exponential backoff + model fallback on batch failure
+- [x] Add row-level validation/skip logic (skip if no email AND no mobile)
+- [x] Add skip reason surfaced in response payload
+- [x] Handle multi-email / multi-mobile → append to `crm_note`
+- [x] Handle newline escaping in `crm_note` for CSV safety (enforced in code)
+- [x] Test with a messy multi-format CSV (different headers, missing fields, embedded commas)
+- [x] Commit: `feat: batch processing, retry, validation layer`
+  - Also fixed along the way (see decisions.md #16): AI was fabricating
+    `created_at` dates for rows with no source date (prompt + schema bug —
+    field wasn't allowed to be null); fixed prompt + schema, added code-level
+    fallback (real processing timestamp, not an AI guess). Also enforced
+    digits-only phone formatting in code rather than trusting the AI's
+    compliance with the prompt instruction.
 
 ## Phase 4 — Backend API Surface (Day 2)
 

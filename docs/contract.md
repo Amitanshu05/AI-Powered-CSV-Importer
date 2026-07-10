@@ -26,11 +26,15 @@ export const DataSourceEnum = z.enum([
 ]);
 
 export const CrmRecordSchema = z.object({
-  created_at: z.string(),                 // must be parseable by `new Date(created_at)`
+  created_at: z.string().nullable(),       // nullable at AI-output validation boundary;
+                                             // backend guarantees a real value by the
+                                             // time a record reaches this API's response
+                                             // (see note below) — see decisions.md #16
   name: z.string().nullable(),
   email: z.string().email().nullable(),
   country_code: z.string().nullable(),
-  mobile_without_country_code: z.string().nullable(),
+  mobile_without_country_code: z.string().nullable(),  // digits only, enforced in code
+                                                          // regardless of AI output — decisions.md #16
   company: z.string().nullable(),
   city: z.string().nullable(),
   state: z.string().nullable(),
@@ -49,10 +53,18 @@ export type CrmRecord = z.infer<typeof CrmRecordSchema>;
 **Rules the AI must follow (re-stated here so schema + prompt never drift apart):**
 - `crm_status` — one of the 4 enum values, or `null`. Never invent a new value.
 - `data_source` — one of the 5 enum values, or `null` if no confident match.
-- `created_at` — must work with `new Date(created_at)` in JS.
+- `created_at` — if a date exists in the source row, must work with `new Date(created_at)`
+  in JS. If NO date exists in the source, the AI must output `null` (never invent a
+  date) — the backend then fills the current processing timestamp as a fallback
+  before the record is returned, so every record in the API response has a real,
+  non-null `created_at` in practice. See decisions.md #16 for why this fallback lives
+  in backend code, not the AI prompt.
+- `mobile_without_country_code` — digits only, no spaces/dashes/formatting. The AI is
+  asked to do this in the prompt, but the backend also strips non-digit characters in
+  code regardless of AI compliance (decisions.md #16).
 - If multiple emails exist → first one in `email`, rest appended into `crm_note`.
 - If multiple mobile numbers exist → first one in `mobile_without_country_code`, rest appended into `crm_note`.
-- Any newline inside `crm_note` must be escaped (`\n`) so the record stays a single CSV row if exported later.
+- Any newline inside `crm_note` must be escaped (`\n`) so the record stays a single CSV row if exported later. Enforced in code (`batch.service.ts`), not just prompted.
 - A row with **no email AND no mobile number** must be skipped, not returned.
 
 ---
@@ -122,6 +134,8 @@ Notes:
 
 - Receiving already-parsed row JSON only
 - Batching, prompting, and validating AI output
+- Normalizing AI output before validation (created_at fallback, phone digit-stripping,
+  newline escaping — decisions.md #16)
 - Returning `imported` / `skipped` per the shape above
 
 ---
@@ -136,4 +150,4 @@ Notes:
 
 ---
 
-*Last updated: Phase 0 — before any implementation. Update this file whenever the actual shape changes during build, and note the change in `decisions.md` if it reflects a design shift.*
+*Last updated: Phase 3 (created_at nullability + phone/newline normalization). Update this file whenever the actual shape changes during build, and note the change in `decisions.md` if it reflects a design shift.*
