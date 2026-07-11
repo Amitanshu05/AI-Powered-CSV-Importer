@@ -115,6 +115,49 @@ Notes:
 - Partial AI/batch failures do NOT fail the whole request — any row that couldn't be processed after retries goes into `skipped` with a reason, not into an HTTP error.
 - HTTP error responses (4xx/5xx) are reserved for request-level problems: malformed payload, missing file, AI provider totally unreachable after retries.
 
+### `POST /api/import/stream` (Phase 6 bonus — real-time progress)
+
+Same purpose and same request body as `POST /api/import`, but the response is
+streamed as Server-Sent Events instead of returned as one JSON blob, so the
+frontend can show real per-batch progress.
+
+**Request body:** identical to `POST /api/import`
+```ts
+{ rows: Record<string, string>[] }
+```
+
+**Response:** `Content-Type: text/event-stream`. Zero or more `progress` events
+(one per completed batch), followed by exactly one terminal event (`done` or `error`).
+
+event: progress
+data: {"batchesCompleted": 2, "totalBatches": 12, "rowsProcessed": 40, "totalRows": 240}
+event: progress
+data: {"batchesCompleted": 3, "totalBatches": 12, "rowsProcessed": 60, "totalRows": 240}
+... one progress event per completed batch ...
+event: done
+data: {"imported": [...], "skipped": [...], "totalImported": 230, "totalSkipped": 10}
+
+or, on a request-level failure:
+event: error
+data: {"message": "AI provider unreachable after retries", "code": "AI_PROVIDER_ERROR"}
+
+**Notes:**
+- The `done` event's `data` is byte-for-byte the same shape as `POST /api/import`'s
+  `data` field — same `CrmRecord[]`, same `SkippedRow[]`, same totals. The frontend
+  reuses the exact same types for both endpoints.
+- The `error` event's `data` is the same shape as `POST /api/import`'s `error` field.
+- Still fully stateless: no job IDs, no polling, no server-side session — the whole
+  batch loop runs inside this one request. Matches architecture.md §3.
+- Batch-level retry/backoff (architecture.md §5) still happens internally before a
+  batch's `progress` event fires — retries are not separately streamed as events.
+- Request-shape errors (`INVALID_PAYLOAD`, `EMPTY_ROWS`) are returned as normal
+  JSON with the matching HTTP status, exactly like `POST /api/import`, because
+  they're caught *before* the SSE headers are written. Once streaming has begun,
+  any failure is sent as an `error` event instead, since the HTTP status is
+  already committed by then.
+- `POST /api/import` (non-streaming) stays exactly as-is, unchanged — this is a new,
+  additive endpoint, not a replacement.
+
 ### `GET /api/health` (basic, for deployment sanity checks)
 
 ```ts
@@ -148,6 +191,12 @@ Notes:
 | `AI_PROVIDER_ERROR` | AI provider unreachable/failed after all retries |
 | `EMPTY_ROWS` | `rows` array was empty |
 
+These codes are shared by both `POST /api/import` (as the JSON `error.code`) and
+`POST /api/import/stream` (as the `error` SSE event's `data.code`) — one set of
+codes, two transports.
+
 ---
 
-*Last updated: Phase 3 (created_at nullability + phone/newline normalization). Update this file whenever the actual shape changes during build, and note the change in `decisions.md` if it reflects a design shift.*
+*Last updated: Phase 6 (added POST /api/import/stream for real-time progress, decisions.md #27).
+Update this file whenever the actual shape changes during build, and note the change
+in `decisions.md` if it reflects a design shift.*

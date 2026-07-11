@@ -3,13 +3,13 @@
 Purpose: narrative log of what's been done and why, updated after every meaningful milestone.
 Paste this file's contents into a fresh Claude session to resume with full context if needed.
 
-Position: Software Developer Intern
-Repo: https://github.com/Amitanshu05/AI-Powered-CSV-Importer
+Position: Software Developer Intern  
+Repo: https://github.com/Amitanshu05/AI-Powered-CSV-Importer  
 Deadline: 12 July 2026
 
 ---
 
-## Current Phase: Phase 5 — Frontend Core Flow (starting next)
+## Current Phase: Phase 5 complete — starting Phase 6 (Polish & Bonus Points)
 
 ## Stack Locked
 - Frontend: Next.js 14 (App Router) + TypeScript + Tailwind + shadcn/ui + TanStack Table/Query + PapaParse
@@ -23,6 +23,7 @@ Deadline: 12 July 2026
 - **Phase 0 — Setup & Docs:** repo created (monorepo: frontend/, backend/, docs/), .gitignore
   configured, Gemini API key obtained and stored in backend/.env (not committed),
   .env.example committed, contract.md / architecture.md / decisions.md all drafted and pushed.
+
 - **Phase 1 — Backend Core:** Express + TypeScript scaffolded (strict mode), `config/env.ts`
   (fail-fast Zod validation of env vars, tested working), `config/logger.ts` (pino, pretty
   in dev), `config/app-error.ts` + `middleware/error-handler.ts` (centralized error handling
@@ -30,12 +31,14 @@ Deadline: 12 July 2026
   exactly), minimal `app.ts` with `/api/health` verified returning 200. Two debugging fixes
   along the way, logged in decisions.md #9-10: swapped ts-node-dev → tsx, removed deprecated
   `moduleResolution` from tsconfig.json.
+
 - **Phase 2 — AI Pipeline:** `prompts/crm-extraction.prompt.ts` written (full field rules,
   enum constraints, ISO date format, multi-email/multi-mobile handling). `scripts/test-single-row.ts`
   proved one raw CSV row → Gemini structured-output call → Zod validation, end to end.
   Two issues fixed, logged in decisions.md #11: Gemini model retirements (switched to
   gemini-3.1-flash-lite primary / gemini-3.5-flash fallback), and a responseSchema bug
   causing silent field omission (fixed by marking all fields required-but-nullable).
+
 - **Phase 3 — Batching & Robustness:** `services/ai-provider.service.ts` (AIProvider
   interface + GeminiAIProvider implementation, retry + model fallback, model names from
   env vars) and `services/batch.service.ts` (chunking via BATCH_SIZE, concurrency via
@@ -51,6 +54,7 @@ Deadline: 12 July 2026
   (not an AI guess) when the AI correctly reports null. Also enforced phone-number
   digit-only formatting in code rather than trusting AI prompt compliance. Both fixes
   re-verified via a second `npm run test:batch` run — confirmed working correctly.
+
 - **Phase 4 — Backend API Surface:** `controllers/import.controller.ts` (thin HTTP layer —
   validates request against `ImportRequestSchema`, calls `processRows()`, shapes response
   exactly per contract.md, distinguishes EMPTY_ROWS/INVALID_PAYLOAD/AI_PROVIDER_ERROR)
@@ -59,11 +63,27 @@ Deadline: 12 July 2026
   correct imported/skipped shape, EMPTY_ROWS error case returned correct 400 + error body.
   No issues found this phase.
 
+- **Phase 5 — Frontend Core Flow (complete):** Full upload → preview → confirm →
+  results flow built and verified end-to-end against the live backend, including
+  a stress test with a CSV containing embedded commas, quotes, and newlines (all
+  correctly skipped with the right reason, none crashed the UI). `features/import/`
+  (typed fetch to POST /api/import distinguishing NETWORK_ERROR from contract-level
+  errors, TanStack Query mutation hook, indeterminate-progress UI) and
+  `features/results/` (imported/skipped tabs, totals summary, all 15 CrmRecord
+  fields rendered) built per contract.md §2 exactly. Three real bugs found during
+  manual testing and fixed, all logged in decisions.md #22-26: a TanStack Table
+  crash on blank/duplicate CSV headers, a missing next/font config causing a
+  serif-font fallback, and shadcn's default neutral (zero-chroma) theme replaced
+  with an indigo accent + light-gray page background for visible card elevation —
+  all confirmed against real screenshots, not assumed. Visual polish pass done
+  strictly within single-page scope per explicit developer instruction: no
+  sidebar/topbar/dashboard shell added, only elevation/spacing/typography/
+  transitions refined (decisions.md #26).
+
 ## In Progress
-- **Phase 5 — Frontend Core Flow:** not yet started.
+- **Phase 6 — Polish & Bonus Points:** starting now.
 
 ## Not Started Yet
-- Phase 6 — Polish & Bonus Points
 - Phase 7 — Dockerize
 - Phase 8 — Deploy
 - Phase 9 — Final Docs & Submission
@@ -95,8 +115,9 @@ Deadline: 12 July 2026
   regardless, as a general resilience measure, not just a workaround for that issue.
 
 ## Next Immediate Step
-Phase 5: scaffold Next.js frontend (TypeScript + Tailwind + shadcn/ui), build the
-upload → local CSV preview → confirm → results flow, wired to POST /api/import.
+Phase 6: progress indicator, virtualized table for 1000+ rows, dark mode toggle,
+targeted unit tests, responsive check at real breakpoints. See checklist.md Phase 6
+for the full list.
 
 ---
 

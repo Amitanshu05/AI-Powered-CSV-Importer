@@ -68,13 +68,13 @@ Legend: [ ] pending · [~] in progress · [x] done
 
 ## Phase 5 — Frontend Core Flow (Day 2 evening – Day 3 morning)
 
-- [ ] Scaffold Next.js + TypeScript + Tailwind + shadcn/ui
-- [ ] Step 1: Upload UI (drag & drop + file picker)
-- [ ] Step 2: Local CSV parse (PapaParse) + preview table (TanStack Table, sticky headers, scroll)
-- [ ] Step 3: Confirm button → calls backend API (TanStack Query)
-- [ ] Step 4: Results table — success/skipped records, totals
-- [ ] Loading states, error states throughout
-- [ ] Commit: `feat: frontend upload-preview-confirm-results flow`
+- [x] Scaffold Next.js + TypeScript + Tailwind + shadcn/ui
+- [x] Step 1: Upload UI (drag & drop + file picker)
+- [x] Step 2: Local CSV parse (PapaParse) + preview table (TanStack Table, sticky headers, scroll)
+- [x] Step 3: Confirm button → calls backend API (TanStack Query)
+- [x] Step 4: Results table — success/skipped records, totals
+- [x] Loading states, error states throughout
+- [x] Commit: `feat: frontend upload-preview-confirm-results flow`
 
 ## Phase 6 — Polish & Bonus Points (Day 3)
 

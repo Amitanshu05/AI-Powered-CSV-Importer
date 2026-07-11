@@ -70,6 +70,56 @@ Format: **Decision → Alternatives considered → Reason**
   With `"module": "commonjs"` already set, TypeScript infers the correct classic Node
   resolution automatically — so the explicit (deprecated) setting was simply removed.
 
+### 11. Swapped Gemini models mid-build + fixed a responseSchema bug
+- **What was wrong:** `gemini-2.5-flash` and `gemini-2.5-flash-lite`, the originally
+  planned models, were both retired by Google mid-2026 — calls started failing.
+  Separately, the AI was silently omitting fields from its structured output
+  instead of extracting them.
+- **Fix:** Switched to `gemini-3.1-flash-lite` (primary) and `gemini-3.5-flash`
+  (fallback), both confirmed GA and current as of July 10, 2026. The omission bug
+  was a `responseSchema` issue — fields weren't marked as required-but-nullable
+  correctly, so the model could skip them entirely rather than explicitly
+  returning `null`. Fixed by marking every field required-but-nullable in the
+  schema, consistent with the same pattern later reused for `created_at` (#16).
+- **Why model names are env vars, not hardcoded:** `GEMINI_PRIMARY_MODEL` /
+  `GEMINI_FALLBACK_MODEL` mean the next model retirement is a config change,
+  not a code change — same reasoning as `AIProviderService`'s abstraction in
+  `architecture.md` §2.
+
+### 12. One Gemini call per batch of rows, not per row
+- **Alternatives:** One AI call per individual CSV row
+- **Reason:** A single LLM call has fixed latency overhead regardless of how
+  many rows it processes in one structured-output call, up to its context
+  limit. Batching amortizes that overhead across many rows instead of paying
+  it per row — directly why `BatchService` exists per `architecture.md` §2's
+  layering table ("A single LLM call has a token ceiling... must be chunked").
+
+### 13. BATCH_SIZE = 20, BATCH_CONCURRENCY = 3 (both env-configurable)
+- **Alternatives:** Larger batches (fewer, bigger AI calls) or fully sequential
+  processing (no concurrency)
+- **Reason:** 20 rows per batch balances prompt size against per-call latency;
+  processing 3 batches concurrently speeds up large files without tripping
+  Gemini's rate limits. Both are env vars, not hardcoded, so they can be tuned
+  post-deployment without a code change — same philosophy as #11's model names.
+
+### 14. Pinned p-limit to ^3.1.0
+- **Alternatives:** Latest p-limit (v4+)
+- **Reason:** p-limit v4 and later are ESM-only, which is incompatible with this
+  project's `"module": "commonjs"` TypeScript config (see #10). v3.1.0 is the
+  last CommonJS-compatible release, so it's pinned explicitly rather than left
+  on a caret range that could silently upgrade into a broken install.
+
+### 15. Newline escaping in `crm_note` enforced in code, not just prompted
+- **What was wrong:** Multi-email/multi-mobile rows get extra values appended
+  into `crm_note` (contract.md §1), and if the source data contains embedded
+  newlines, an unescaped newline inside a CSV field breaks re-export as CSV
+  later — the row would visually split across multiple lines.
+- **Fix:** `batch.service.ts` escapes any newline in `crm_note` to `\n`
+  unconditionally, regardless of whether the AI already did so correctly.
+  Same "never trust the model's output blindly" principle as #16 and
+  `architecture.md` §2 — asking the prompt to do it is a request, enforcing it
+  in code is a guarantee.
+
 ### 16. Fixed created_at fabrication + enforced phone digit-formatting in code
 - **What was wrong:** rows with no date anywhere in the source were getting a
   fabricated `created_at` (the AI invented a value). Root cause: the prompt
@@ -93,6 +143,105 @@ Format: **Decision → Alternatives considered → Reason**
   code is a guarantee. Verified via `npm run test:batch`: rows with a real source
   date keep it, rows with no source date get today's real timestamp (not a fake
   date), and all phone numbers come back digits-only.
+
+### 17. Frontend folder structure: 4 feature folders, not architecture.md's literal 3
+- **Alternatives:** Literal `upload/`, `table/`, `ui/` as named in architecture.md §6
+- **Reason:** checklist.md's Phase 5 already splits the work into 4 distinct steps
+  (Upload UI → Preview table → Confirm/API call → Results table), and contract.md
+  treats "preview" (frontend-only, zero cost) and "results" (post-API) as separate
+  concerns. Mapped folders to those 4 steps: `upload/`, `preview/`, `import/`,
+  `results/`. Confirmed explicitly with the developer before writing code.
+
+### 18. Non-CSV file uploads rejected with inline error, not silently ignored or force-parsed
+- **Alternatives:** Silently reject the drop; try parsing any file type anyway
+- **Reason:** Silent rejection gives no feedback; force-parsing garbage rows would
+  produce a confusing preview. Inline error naming the bad file is clearest,
+  consistent with "never trust input blindly" (architecture.md §2).
+
+### 19. Large-CSV threshold set at 5,000 rows — warns, does not block
+- **Alternatives:** No warning at all; hard block above a row limit
+- **Reason:** BATCH_SIZE=20 means a 5,000-row file is ~250 sequential AI batches —
+  worth flagging so the user isn't confused by a long wait. No technical ceiling
+  requires an actual block.
+
+### 20. Preview table caps rendered rows at 100 (pre-virtualization)
+- **Alternatives:** Render all parsed rows immediately; build virtualization now
+- **Reason:** checklist.md explicitly places virtualization under Phase 6 bonus,
+  not Phase 5. Capping avoids a laggy preview in the meantime; all parsed rows
+  are still sent to the backend on Confirm regardless of what's rendered.
+
+### 21. Fixed TanStack Table crash on blank/duplicate CSV headers
+- **What was wrong:** A real test CSV had a trailing blank header column.
+  `id: field` with `field === ""` produced a falsy id; TanStack Table's internal
+  `if (!id)` check treated empty string as "no id," throwing
+  "Columns require an id when using a non-string header" and crashing the whole
+  preview/results table.
+- **Fix:** New shared `src/lib/csv-columns.ts` (`buildSafeColumns`) guarantees a
+  non-empty, unique `id` and display `label` for every column regardless of the
+  raw header, while `accessorFn` (not `accessorKey`) always reads the exact
+  original field name — so data is never renamed or misread, only the column
+  id/label used for rendering. Applied to both `features/preview/columns.tsx`
+  and `features/results/columns.tsx` (skipped-rows table) since both build
+  columns dynamically from raw CSV headers.
+
+### 22. Import errors split into NETWORK_ERROR vs. contract-level errors, both retryable
+- **Alternatives:** Treat all fetch failures the same; make the user re-upload on any error
+- **Reason:** contract.md §2 only defines request-level error codes
+  (INVALID_PAYLOAD/AI_PROVIDER_ERROR/EMPTY_ROWS), which assume a response was
+  received. A network failure (backend unreachable) never gets that far. Both
+  are caught in `import-rows.ts` as one `ImportRequestError` type so the UI
+  doesn't special-case them, and a Retry button re-fires the same already-
+  parsed rows — no re-upload needed, since the rows never left the browser
+  until Confirm.
+
+### 23. Fixed missing font configuration (next/font)
+- **What was wrong:** `layout.tsx` never configured `next/font`, so no sans-serif
+  font was actually loaded — the browser fell back to a serif font on headings,
+  confirmed visually in testing (looked like Times/Georgia instead of Inter).
+- **Fix:** Wired `Inter` via `next/font/google` into the `--font-sans` CSS
+  variable that shadcn's `globals.css` already expected, per `components.json`'s
+  existing `cssVariables: true` setup — no theme file changes needed, just the
+  missing font loader.
+
+### 24. Replaced shadcn's default neutral (zero-chroma) theme with an indigo accent
+- **What was wrong:** `components.json` had `baseColor: "neutral"`, meaning every
+  theme color was `oklch(x 0 0)` — literally zero saturation. Combined with
+  `--background` and `--card` both being pure white, the app had no visible
+  color and no card elevation contrast at all.
+- **Fix:** Set `--primary`/`--ring`/`--accent` to real indigo values (confirmed
+  against actual browser DevTools computed styles, not assumed), and changed
+  `--background` to a soft light-gray so white cards visibly lift off the page.
+  Verified against screenshots before/after — this was a real bug, not a
+  subjective style opinion, since a zero-chroma theme is not a valid design
+  choice for "modern SaaS" regardless of taste.
+
+### 25. Visual polish scoped to single-page structure only — no dashboard shell
+- **Alternatives:** Restructure into a multi-page dashboard matching the
+  reference screenshots' sidebar/topbar layout
+- **Reason:** Explicitly rejected by the developer. checklist.md/architecture.md
+  never scope a dashboard shell — this is a single-flow tool. Matched the
+  reference's visual *quality* (elevation, spacing, typography, button weight,
+  hover transitions) via a shared `src/lib/ui.ts` token file (`cardSurface`,
+  `cardPadding`) applied consistently across every panel, not per-component
+  guesswork. Structure was explicitly left untouched.
+
+### 26. Used `hover:brightness-110` instead of a literal gradient on the primary button
+- **Alternatives:** Hardcoded CSS gradient on the Confirm Import button
+- **Reason:** A hardcoded gradient stop would bypass the CSS-variable theme
+  system (`--primary`) — if the theme color changes later, a hardcoded gradient
+  wouldn't follow it. `brightness-110` achieves the same "richer on hover" feel
+  while staying fully theme-driven.
+
+### 27. Progress indicator: SSE, not polling
+- **Alternatives:** Polling a job-status endpoint (`GET /api/import/:jobId/status`)
+- **Reason:** Polling requires the backend to persist job state between separate
+  HTTP requests — reintroducing exactly the server-side state `architecture.md`
+  §3 explicitly rejected ("any backend instance can handle any request... no
+  server-side memory leaks"). SSE keeps the whole batch loop inside one HTTP
+  request/response lifecycle — same stateless request, just streamed instead
+  of buffered — so it's the only progress mechanism that doesn't contradict the
+  existing stateless architecture. New endpoint `POST /api/import/stream`,
+  additive alongside the original `POST /api/import` (see contract.md §2.5).
 
 ---
 
