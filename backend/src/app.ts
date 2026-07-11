@@ -7,7 +7,9 @@ import importRoutes from "./routes/import.routes";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "*"
+}));
 app.use(express.json({ limit: "10mb" })); // CSV row JSON can be sizable
 
 app.get("/api/health", (req, res) => {
