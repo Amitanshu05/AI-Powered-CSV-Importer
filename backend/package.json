@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "test:single-row": "tsx src/scripts/test-single-row.ts",
-    "test:batch": "tsx src/scripts/test-batch.ts"
+    "test:batch": "tsx src/scripts/test-batch.ts",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",

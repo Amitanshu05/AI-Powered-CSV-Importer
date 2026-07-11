@@ -1,14 +1,14 @@
-// src/app/page.tsx
 "use client";
 
 import { useState } from "react";
 import { AlertCircle, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { UploadStep } from "@/features/upload/components/upload-step";
 import { PreviewTable } from "@/features/preview/components/preview-table";
 import { ConfirmBar } from "@/features/preview/components/confirm-bar";
 import { ImportProgress } from "@/features/import/components/import-progress";
-import { useImportMutation } from "@/features/import/hooks/use-import-mutation";
+import { useImportStream } from "@/features/import/hooks/use-import-stream";
 import { ImportRequestError } from "@/features/import/api/import-rows";
 import { ResultsView } from "@/features/results/components/results-view";
 import type { RawCsvRow } from "@/types/crm-record";
@@ -21,7 +21,7 @@ interface ParsedFile {
 
 export default function Home() {
   const [parsed, setParsed] = useState<ParsedFile | null>(null);
-  const importMutation = useImportMutation();
+  const importMutation = useImportStream();
 
   const handleParsed = (rows: RawCsvRow[], fields: string[], fileName: string) => {
     importMutation.reset();
@@ -47,19 +47,18 @@ export default function Home() {
   })();
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-12 sm:px-8 sm:py-16">
-      <div className="mb-10 space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          GrowEasy CSV Importer
-        </h1>
-        <p className="text-base text-muted-foreground">
-          Upload a CSV, review it, and import structured leads into your CRM.
-        </p>
+    <main className="mx-auto max-w-4xl px-4 py-8 sm:px-8 sm:py-16">
+      <div className="mb-10 flex items-start justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-semibold tracking-tight">GrowEasy CSV Importer</h1>
+          <p className="text-sm text-muted-foreground sm:text-base">
+            Upload a CSV, review it, and import structured leads into your CRM.
+          </p>
+        </div>
+        <ThemeToggle />
       </div>
 
-      {!parsed && !importMutation.isSuccess && (
-        <UploadStep onParsed={handleParsed} />
-      )}
+      {!parsed && !importMutation.isSuccess && <UploadStep onParsed={handleParsed} />}
 
       {parsed && !importMutation.isSuccess && (
         <div className="space-y-6">
@@ -72,7 +71,7 @@ export default function Home() {
           />
 
           {errorMessage && (
-            <div className="flex items-start justify-between gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 px-5 py-4 text-sm text-destructive shadow-sm">
+            <div className="flex flex-col items-start justify-between gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 px-5 py-4 text-sm text-destructive shadow-sm sm:flex-row sm:items-start">
               <div className="flex items-start gap-2">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>{errorMessage}</span>
@@ -85,7 +84,7 @@ export default function Home() {
           )}
 
           {importMutation.isPending ? (
-            <ImportProgress rowCount={parsed.rows.length} />
+            <ImportProgress rowCount={parsed.rows.length} progress={importMutation.progress} />
           ) : (
             <PreviewTable rows={parsed.rows} fields={parsed.fields} />
           )}

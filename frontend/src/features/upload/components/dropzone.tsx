@@ -67,7 +67,7 @@ export function Dropzone({ onFileSelected, disabled }: DropzoneProps) {
           setIsDragActive(false);
         }}
         className={cn(
-          "flex cursor-pointer flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed px-6 py-20 text-center transition-all duration-200",
+          "flex cursor-pointer flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed px-4 py-12 text-center transition-all duration-200 sm:px-6 sm:py-20",
           "border-border bg-muted/30 hover:bg-muted/50 hover:border-primary/40",
           isDragActive && "border-primary bg-primary/5 shadow-md",
           disabled && "pointer-events-none opacity-60"

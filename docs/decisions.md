@@ -243,6 +243,39 @@ Format: **Decision → Alternatives considered → Reason**
   existing stateless architecture. New endpoint `POST /api/import/stream`,
   additive alongside the original `POST /api/import` (see contract.md §2.5).
 
+  ### 28. Row virtualization via @tanstack/react-virtual, not a manual windowing implementation
+- **Alternatives:** Hand-rolled scroll-based windowing; react-window
+- **Reason:** Already committed to the TanStack ecosystem (Table + Query,
+  decisions.md #6) — react-virtual shares conventions and composes cleanly
+  with the existing DataTable instead of introducing a second virtualization
+  library with different APIs. Applied once in the shared DataTable component,
+  so preview, imported, and skipped tables all got virtualization from a
+  single change. Verified on a real 1335-row CSV.
+
+### 29. Dark mode via manual class toggle + localStorage, not next-themes
+- **Alternatives:** next-themes package
+- **Reason:** globals.css already had a complete `.dark` CSS variable block
+  defined by shadcn init — toggling the `dark` class on `<html>` was all
+  that was missing. Didn't add a dependency for something achievable in ~20
+  lines. Respects system preference (`prefers-color-scheme`) as the initial
+  default, explicit user choice persisted to localStorage afterward.
+
+### 30. Unit tests target the actual bug-fix logic, not full coverage
+- **Alternatives:** Comprehensive test suite across all components/services
+- **Reason:** checklist.md explicitly asks for "a few targeted" tests, not
+  full coverage, given the timeline. Chose the functions with the highest
+  bug-history: buildSafeColumns (decisions.md #21's crash fix) and the four
+  batch.service.ts normalization helpers (decisions.md #11-16's fixes) —
+  tests that would have caught those real bugs if they'd existed earlier,
+  rather than tests for already-simple, low-risk code.
+
+### 31. Responsive pass: spacing/wrap adjustments only, no separate mobile layout
+- **Alternatives:** Distinct mobile-specific component variants
+- **Reason:** The existing Tailwind responsive classes already handled most
+  breakpoints; the only real narrow-viewport issues were the dropzone's
+  padding and the results tabs bar not wrapping. Fixed both with `sm:`
+  breakpoint utilities on the same components — no structural duplication.
+
 ---
 
 *Add new entries below as they come up during the build (batching strategy specifics,

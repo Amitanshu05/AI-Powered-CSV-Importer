@@ -9,7 +9,7 @@ Deadline: 12 July 2026
 
 ---
 
-## Current Phase: Phase 5 complete — starting Phase 6 (Polish & Bonus Points)
+## Current Phase: Phase 6 complete — starting Phase 7 (Dockerize)
 
 ## Stack Locked
 - Frontend: Next.js 14 (App Router) + TypeScript + Tailwind + shadcn/ui + TanStack Table/Query + PapaParse
@@ -80,44 +80,38 @@ Deadline: 12 July 2026
   sidebar/topbar/dashboard shell added, only elevation/spacing/typography/
   transitions refined (decisions.md #26).
 
+- **Phase 6 — Polish & Bonus Points (complete):** Real-time SSE progress
+  (decisions.md #27), row virtualization via @tanstack/react-virtual in the
+  shared DataTable (decisions.md #28) — verified on a real 1335-row CSV with
+  smooth scroll, no lag. Dark mode toggle persisted to localStorage with
+  system-preference fallback (decisions.md #29). Unit tests added on both
+  sides: frontend covers buildSafeColumns edge cases (blank/duplicate headers)
+  and CSV validation helpers; backend covers chunking, created_at fallback,
+  phone normalization, and newline escaping — the exact bug-fix logic from
+  decisions.md #11-16 (decisions.md #30). Responsive spacing pass on dropzone
+  and results tabs for narrow viewports (decisions.md #31). One AI-extraction
+  data-quality observation logged, not fixed (out of Phase 5/6 scope): a
+  `mailto:` prefix occasionally survives partially in extracted emails —
+  passes validation since still syntactically valid, but factually wrong.
+  Candidate for a Phase 2 prompt refinement, not a frontend bug.
+
 ## In Progress
-- **Phase 6 — Polish & Bonus Points:** starting now.
+- **Phase 7 — Dockerize:** starting now.
 
 ## Not Started Yet
-- Phase 7 — Dockerize
 - Phase 8 — Deploy
 - Phase 9 — Final Docs & Submission
 
 ## Key Decisions Made So Far
-(Full detail in docs/decisions.md — this is just a quick-reference summary)
-1. Monorepo, not two separate repos
-2. Stateless backend, no DB
-3. Gemini as LLM provider — model names configurable via env (currently
-   gemini-3.1-flash-lite primary, gemini-3.5-flash fallback)
-4. Zod as shared validation layer (API + AI output)
-5. Express kept as specified, structure compensates for its minimalism
-6. TanStack Table/Query on frontend
-7. Frontend parses CSV locally; backend never touches raw file
-8. Render + Vercel for deployment
-9. tsx instead of ts-node-dev
-10. Removed deprecated `moduleResolution` config
-11. Gemini model swap + responseSchema required-fields fix
-12. One Gemini call per batch of rows, not per row
-13. BATCH_SIZE = 20, BATCH_CONCURRENCY = 3 (both configurable via env)
-14. p-limit pinned to ^3.1.0 (CommonJS compatibility — v4+ is ESM-only)
-15. Newline escaping in crm_note enforced in code, not just prompted
-16. Fixed created_at fabrication bug (prompt + schema + code-level fallback) and
-    enforced phone digit-only formatting in code — see decisions.md #16 for full detail
+(unchanged...)
 
 ## Known Issues / Open Questions
-- None currently. gemini-3.5-flash's earlier 503 flakiness (noted in a prior session)
-  has not recurred during Phase 3 testing — model fallback logic remains in place
-  regardless, as a general resilience measure, not just a workaround for that issue.
+- None currently.
 
 ## Next Immediate Step
-Phase 6: progress indicator, virtualized table for 1000+ rows, dark mode toggle,
-targeted unit tests, responsive check at real breakpoints. See checklist.md Phase 6
-for the full list.
+Phase 7: Dockerize both frontend and backend with production-ready configs,
+ensure environment variables are handled correctly, and verify containers run
+locally before moving to deployment.
 
 ---
 

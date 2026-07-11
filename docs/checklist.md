@@ -78,12 +78,12 @@ Legend: [ ] pending · [~] in progress · [x] done
 
 ## Phase 6 — Polish & Bonus Points (Day 3)
 
-- [ ] Progress indicator during AI processing (SSE or polling)
-- [ ] Virtualized table confirmed working on large CSV (1000+ rows)
-- [ ] Dark mode toggle
-- [ ] A few targeted unit tests (validation logic, skip logic, multi-email handling)
-- [ ] Responsive design check (mobile/tablet widths)
-- [ ] Commit: `feat: progress indicator, dark mode, tests`
+- [x] Progress indicator during AI processing (SSE or polling)
+- [x] Virtualized table confirmed working on large CSV (1000+ rows)
+- [x] Dark mode toggle
+- [x] A few targeted unit tests (validation logic, skip logic, multi-email handling)
+- [x] Responsive design check (mobile/tablet widths)
+- [x] Commit: `feat: progress indicator, dark mode, tests`
 
 ## Phase 7 — Dockerize (Day 3)
 
