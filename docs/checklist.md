@@ -87,10 +87,10 @@ Legend: [ ] pending · [~] in progress · [x] done
 
 ## Phase 7 — Dockerize (Day 3)
 
-- [ ] `Dockerfile` for backend
-- [ ] `Dockerfile` for frontend (or confirm Vercel handles it natively — document choice)
-- [ ] `docker-compose.yml` for local full-stack run
-- [ ] Commit: `chore: docker setup`
+- [x] `Dockerfile` for backend
+- [x] `Dockerfile` for frontend (or confirm Vercel handles it natively — document choice)
+- [x] `docker-compose.yml` for local full-stack run
+- [x] Commit: `chore: docker setup`
 
 ## Phase 8 — Deploy (Day 3)
 

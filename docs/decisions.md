@@ -276,6 +276,19 @@ Format: **Decision → Alternatives considered → Reason**
   padding and the results tabs bar not wrapping. Fixed both with `sm:`
   breakpoint utilities on the same components — no structural duplication.
 
+  ### 32. Excluded test files and vitest config from production TypeScript builds
+- **What was wrong:** `npm run build` (backend's `tsc`, frontend's `next build`)
+  both typecheck every `.ts` file in the project by default, including
+  `*.test.ts` files and `vitest.config.ts` — but `vitest` is a dev-only
+  dependency, never installed in the Docker runner stage (`npm ci --omit=dev`),
+  so the build failed trying to resolve its types.
+- **Fix:** Added `"exclude": [..., "**/*.test.ts", "vitest.config.ts"]` to both
+  `backend/tsconfig.json` and `frontend/tsconfig.json`. Test files were never
+  meant to be part of the compiled production output in the first place —
+  `npm run test` (vitest) runs them directly without going through `tsc`/
+  `next build` at all, so excluding them from the build doesn't affect test
+  execution, only removes them from something that never needed to see them.
+
 ---
 
 *Add new entries below as they come up during the build (batching strategy specifics,
