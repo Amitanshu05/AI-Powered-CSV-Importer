@@ -289,6 +289,38 @@ Format: **Decision → Alternatives considered → Reason**
   `next build` at all, so excluding them from the build doesn't affect test
   execution, only removes them from something that never needed to see them.
 
+
+### 33. Cursor pointer for all interactive elements
+- **Alternatives:** Default cursor behavior
+- **Reason:** Improves UX clarity — users immediately understand clickable elements. Applied consistently across buttons and interactive UI.
+
+### 34. Standardized padding system for UI consistency
+- **Alternatives:** Per-component manual spacing
+- **Reason:** Earlier UI felt inconsistent (some cramped, some oversized). Standardizing padding via shared tokens (`cardPadding`, button spacing) ensures visual balance across all components.
+
+### 35. Improved visual hierarchy (font weight + contrast)
+- **Alternatives:** Default shadcn typography
+- **Reason:** UI initially looked “flat” with weak emphasis. Increased font weight, contrast, and spacing to create clearer hierarchy and improve readability.
+
+### 36. Balanced tab/button sizing and spacing
+- **Alternatives:** Uneven padding and text scaling
+- **Reason:** Tabs previously felt either cramped or oversized. Adjusted padding and alignment so both "Imported" and "Skipped" feel visually balanced and equally important.
+
+### 37. Hover feedback improvements for better affordance
+- **Alternatives:** Minimal or no hover states
+- **Reason:** Stronger hover states (background + color + brightness) make UI feel more interactive and responsive.
+
+### 38. Consistent design tokens instead of scattered styles
+- **Alternatives:** Inline Tailwind classes everywhere
+- **Reason:** Centralizing styles in `ui.ts` improves maintainability and keeps the design system consistent across pages.
+
+### 39. Avoid over-design — maintain single-flow UX
+- **Alternatives:** Adding dashboards, sidebars, complex layouts
+- **Reason:** Keeping UI simple aligns with assignment scope and improves usability — focus stays on CSV import workflow.
+
+### 40. Iterative UI refinement based on real usage feedback
+- **Alternatives:** One-time design implementation
+- **Reason:** Real testing revealed spacing, contrast, and interaction issues that weren’t obvious initially — refining based on usage led to a more polished product.
 ---
 
 *Add new entries below as they come up during the build (batching strategy specifics,

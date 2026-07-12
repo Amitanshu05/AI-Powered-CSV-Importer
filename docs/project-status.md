@@ -95,23 +95,27 @@ Deadline: 12 July 2026
   passes validation since still syntactically valid, but factually wrong.
   Candidate for a Phase 2 prompt refinement, not a frontend bug.
 
-## In Progress
-- **Phase 7 — Dockerize:** starting now.
+  ## Current Phase: Phase 8 complete — finishing Phase 9 (final docs, submission)
 
-## Not Started Yet
-- Phase 8 — Deploy
-- Phase 9 — Final Docs & Submission
+  - **Phase 7 — Dockerize (complete):** Multi-stage Dockerfiles for both services
+  (builder stage compiles, runner stage is prod-only via `npm ci --omit=dev`).
+  `NEXT_PUBLIC_API_URL` passed as a build-time ARG on the frontend since Next.js
+  inlines `NEXT_PUBLIC_*` vars at build time, not runtime. Two real bugs found
+  and fixed during verification, logged in decisions.md #32: backend's
+  `package-lock.json` was out of sync with `package.json` (missing `p-limit`
+  from decisions.md #14's pin) — `npm ci` correctly refused to run until
+  `npm install` resynced it; and both `tsc`/`next build` were failing trying to
+  typecheck `*.test.ts` files and `vitest.config.ts`, since `vitest` is a
+  dev-only dependency never installed in the runner stage — fixed by excluding
+  test files from both `tsconfig.json`s. `docker compose up --build` verified
+  both containers building, starting, and serving a full upload→results cycle
+  together.
+- **Phase 8 — Deploy (complete):** Backend live on Render
+  (https://groweasy-backend-ffnk.onrender.com), frontend live on Vercel
+  (https://ai-powered-csv-importer-virid.vercel.app/).
 
-## Key Decisions Made So Far
-(unchanged...)
-
-## Known Issues / Open Questions
-- None currently.
-
-## Next Immediate Step
-Phase 7: Dockerize both frontend and backend with production-ready configs,
-ensure environment variables are handled correctly, and verify containers run
-locally before moving to deployment.
+  ## Next Immediate Step
+  Phase 9: final README, last doc sync, submission email.
 
 ---
 

@@ -96,7 +96,13 @@ Without row-level isolation, one bad row would force us to discard an entire oth
 
 ## 6. Frontend Architecture Notes
 
-- **Feature-based folder structure** (`upload/`, `table/`, `ui/`) rather than type-based (`components/`, `containers/`, `pages/` split arbitrarily) — keeps everything related to one concern physically together, easier to navigate for a reviewer skimming the repo.
+- **Feature-based folder structure** (`upload/`, `preview/`, `import/`, `results/` — mapped
+  to the 4 sub-steps of the import flow, not the 3 literally sketched at planning time)
+  rather than type-based (`components/`, `containers/`, `pages/` split arbitrarily) — keeps
+  everything related to one concern physically together, easier to navigate for a reviewer
+  skimming the repo. See decisions.md #17 for why this diverged from the original 3-folder
+  sketch.
+  
 - **TanStack Query** owns all server communication — gives loading/error/retry states without hand-rolled `useEffect` fetch logic, which is a common source of race-condition bugs in junior code.
 - **TanStack Table** owns the preview and results tables — virtualization and sticky headers come from the library, not custom-built, so effort goes into correctness of data rather than reinventing table rendering.
 
