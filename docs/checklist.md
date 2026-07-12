@@ -101,11 +101,11 @@ Legend: [ ] pending · [~] in progress · [x] done
 
 ## Phase 9 — Final Docs & Submission (Day 3, final hours)
 
-- [ ] Update `docs/project-status.md` to final "complete" state
-- [ ] Write final `README.md`: setup instructions, tech stack, architecture summary, live URL, known limitations (e.g. Render cold start)
-- [ ] Final pass: re-check every explicit AI Instruction rule from the assignment doc against actual behavior
-- [ ] Final commit + push: `docs: final README + submission ready`
-- [ ] Send email to varun@groweasy.ai with: hosted URL, GitHub URL, position (Intern)
+- [x] Update `docs/project-status.md` to final "complete" state
+- [x] Write final `README.md`: setup instructions, tech stack, architecture summary, live URL, known limitations (e.g. Render cold start)
+- [x] Final pass: re-check every explicit AI Instruction rule from the assignment doc against actual behavior
+- [x] Final commit + push: `docs: final README + submission ready`
+- [x] Send email to varun@groweasy.ai with: hosted URL, GitHub URL, position (Intern)
 
 ---
 
