@@ -94,11 +94,11 @@ Format: **Decision → Alternatives considered → Reason**
   it per row — directly why `BatchService` exists per `architecture.md` §2's
   layering table ("A single LLM call has a token ceiling... must be chunked").
 
-### 13. BATCH_SIZE = 20, BATCH_CONCURRENCY = 3 (both env-configurable)
+### 13. BATCH_SIZE = 20, BATCH_CONCURRENCY = 1 (both env-configurable)
 - **Alternatives:** Larger batches (fewer, bigger AI calls) or fully sequential
   processing (no concurrency)
 - **Reason:** 20 rows per batch balances prompt size against per-call latency;
-  processing 3 batches concurrently speeds up large files without tripping
+  processing 1 batches concurrently speeds up large files without tripping
   Gemini's rate limits. Both are env vars, not hardcoded, so they can be tuned
   post-deployment without a code change — same philosophy as #11's model names.
 
