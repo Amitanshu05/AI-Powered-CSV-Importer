@@ -36,7 +36,7 @@ export function ResultsView({ data, onStartOver }: ResultsViewProps) {
           <button
             onClick={() => setTab("imported")}
             className={cn(
-              "rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
+              "cursor-pointer rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
               tab === "imported"
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -48,7 +48,7 @@ export function ResultsView({ data, onStartOver }: ResultsViewProps) {
           <button
             onClick={() => setTab("skipped")}
             className={cn(
-              "rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
+              "cursor-pointer rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
               tab === "skipped"
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -61,9 +61,8 @@ export function ResultsView({ data, onStartOver }: ResultsViewProps) {
         {/* Action */}
         <Button
           variant="outline"
-          size="sm"
           onClick={onStartOver}
-          className="shadow-sm hover:shadow-md transition-all duration-200"
+          className="shadow-sm transition-all duration-200 hover:shadow-md"
         >
           Import another file
         </Button>

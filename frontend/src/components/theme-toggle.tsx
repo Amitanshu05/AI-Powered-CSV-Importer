@@ -27,7 +27,13 @@ export function ThemeToggle() {
   if (!mounted) return <div className="h-9 w-9" />;
 
   return (
-    <Button variant="outline" size="icon" onClick={toggle} aria-label="Toggle dark mode" className="shadow-sm">
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={toggle}
+      aria-label="Toggle dark mode"
+      className="cursor-pointer shadow-sm"
+    >
       {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </Button>
   );

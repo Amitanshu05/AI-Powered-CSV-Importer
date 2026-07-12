@@ -50,8 +50,11 @@ export function DataTable<TData>({ columns, data, maxHeight = "420px" }: DataTab
         <TableHeader className="sticky top-0 z-10 bg-muted/60 backdrop-blur-sm">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-transparent">
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="whitespace-nowrap py-3.5 font-semibold text-foreground">
+              {headerGroup.headers.map((header, index) => (
+                <TableHead
+                  key={header.id}
+                  className={cn("whitespace-nowrap py-3.5 font-semibold text-foreground", index === 0 && "pl-6")}
+                >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               ))}
@@ -78,8 +81,8 @@ export function DataTable<TData>({ columns, data, maxHeight = "420px" }: DataTab
                       virtualRow.index % 2 === 1 && "bg-muted/20"
                     )}
                   >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="whitespace-nowrap py-3.5">
+                    {row.getVisibleCells().map((cell, index) => (
+                      <TableCell key={cell.id} className={cn("whitespace-nowrap py-3.5", index === 0 && "pl-6")}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}

@@ -14,13 +14,13 @@ export function ResultsSummary({ totalImported, totalSkipped }: ResultsSummaryPr
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <Card className="rounded-2xl border border-border/60 shadow-sm">
-        <CardContent className="p-6">
+        <CardContent className="p-5">
           <p className="text-sm text-muted-foreground">Total Rows</p>
           <p className="text-2xl font-semibold">{total}</p>
         </CardContent>
       </Card>
       <Card className="rounded-2xl border border-emerald-200 bg-emerald-50/60 shadow-sm dark:border-emerald-900/50 dark:bg-emerald-950/20">
-        <CardContent className="flex items-center justify-between p-6">
+        <CardContent className="flex items-center justify-between p-5">
           <div>
             <p className="text-sm text-emerald-700 dark:text-emerald-400">Imported</p>
             <p className="text-2xl font-semibold text-emerald-700 dark:text-emerald-400">{totalImported}</p>
@@ -29,7 +29,7 @@ export function ResultsSummary({ totalImported, totalSkipped }: ResultsSummaryPr
         </CardContent>
       </Card>
       <Card className="rounded-2xl border border-red-200 bg-red-50/60 shadow-sm dark:border-red-900/50 dark:bg-red-950/20">
-        <CardContent className="flex items-center justify-between p-6">
+        <CardContent className="flex items-center justify-between p-5">
           <div>
             <p className="text-sm text-red-700 dark:text-red-400">Skipped</p>
             <p className="text-2xl font-semibold text-red-700 dark:text-red-400">{totalSkipped}</p>

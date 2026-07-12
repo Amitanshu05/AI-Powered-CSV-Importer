@@ -31,14 +31,19 @@ export function ConfirmBar({ fileName, rowCount, onConfirm, onReset, disabled }:
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={onReset} disabled={disabled} className="cursor-pointer transition-colors duration-200">
+          <Button
+            variant="outline"
+            onClick={onReset}
+            disabled={disabled}
+            className="cursor-pointer shadow-sm transition-colors duration-200"
+          >
             <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
             Start over
           </Button>
           <Button
             onClick={onConfirm}
             disabled={disabled}
-            className="cursor-pointer px-6 py-5 font-medium shadow-sm transition-all duration-200 hover:shadow-md hover:brightness-110"
+            className="cursor-pointer font-medium shadow-sm transition-all duration-200 hover:shadow-md hover:brightness-110"
           >
             Confirm Import
           </Button>
