@@ -47,11 +47,11 @@ export default function Home() {
   })();
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8 sm:px-8 sm:py-16">
-      <div className="mb-10 flex items-start justify-between gap-4">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">GrowEasy CSV Importer</h1>
-          <p className="text-sm text-muted-foreground sm:text-base">
+    <main className="mx-auto max-w-4xl px-4 py-8 sm:px-8 sm:py-14">
+      <div className="mb-8 flex items-start justify-between gap-4 sm:mb-12">
+        <div className="space-y-1.5">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">GrowEasy CSV Importer</h1>
+          <p className="text-sm font-normal text-muted-foreground/80 sm:text-base">
             Upload a CSV, review it, and import structured leads into your CRM.
           </p>
         </div>
@@ -61,7 +61,7 @@ export default function Home() {
       {!parsed && !importMutation.isSuccess && <UploadStep onParsed={handleParsed} />}
 
       {parsed && !importMutation.isSuccess && (
-        <div className="space-y-6">
+        <div className="space-y-5">
           <ConfirmBar
             fileName={parsed.fileName}
             rowCount={parsed.rows.length}
@@ -76,7 +76,7 @@ export default function Home() {
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>{errorMessage}</span>
               </div>
-              <Button variant="ghost" size="sm" onClick={handleConfirm} className="shrink-0">
+              <Button variant="ghost" size="sm" onClick={handleConfirm} className="shrink-0 cursor-pointer">
                 <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
                 Retry
               </Button>

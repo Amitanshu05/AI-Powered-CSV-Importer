@@ -1,27 +1,29 @@
 // src/features/results/columns.tsx
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+import { buildSafeColumns } from "@/lib/csv-columns";
 import type { CrmRecord, RawCsvRow, SkippedRow } from "@/types/crm-record";
 
 function EmptyCell() {
   return <span className="italic text-muted-foreground">—</span>;
 }
 
-const STATUS_VARIANT: Record<
-  string,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  GOOD_LEAD_FOLLOW_UP: "default",
-  SALE_DONE: "default",
-  DID_NOT_CONNECT: "secondary",
-  BAD_LEAD: "destructive",
+const STATUS_COLOR: Record<string, string> = {
+  GOOD_LEAD_FOLLOW_UP:
+    "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900",
+  SALE_DONE:
+    "bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900",
+  DID_NOT_CONNECT:
+    "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900",
+  BAD_LEAD:
+    "bg-red-100 text-red-800 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-900",
 };
 
 function humanize(value: string): string {
   return value
     .toLowerCase()
     .split("_")
-    .map((w) => w ? w[0].toUpperCase() + w.slice(1) : "")
+    .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : ""))
     .join(" ");
 }
 
@@ -79,7 +81,7 @@ export const importedColumns: ColumnDef<CrmRecord>[] = [
       const value = getValue<string | null>();
       if (!value) return <EmptyCell />;
       return (
-        <Badge variant={STATUS_VARIANT[value] ?? "outline"}>
+        <Badge variant="outline" className={STATUS_COLOR[value] ?? ""}>
           {humanize(value)}
         </Badge>
       );
@@ -138,9 +140,6 @@ export const importedColumns: ColumnDef<CrmRecord>[] = [
 
 // Skipped rows keep whatever raw CSV headers the file had — dynamic, like
 // preview/columns.tsx — plus a fixed "Reason Skipped" column up front.
-// same fix applied to the skipped-rows table's dynamic original-CSV columns
-import { buildSafeColumns } from "@/lib/csv-columns";
-
 export function buildSkippedColumns(fields: string[]): ColumnDef<SkippedRow>[] {
   const reasonColumn: ColumnDef<SkippedRow> = {
     id: "reason",

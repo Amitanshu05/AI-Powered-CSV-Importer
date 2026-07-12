@@ -94,10 +94,10 @@ Legend: [ ] pending · [~] in progress · [x] done
 
 ## Phase 8 — Deploy (Day 3)
 
-- [ ] Deploy backend to Render, confirm env vars set, test live endpoint
-- [ ] Deploy frontend to Vercel, point to live backend URL
-- [ ] Full end-to-end test on the live deployed app (not localhost)
-- [ ] Commit: `chore: deployment config`
+- [x] Deploy backend to Render, confirm env vars set, test live endpoint
+- [x] Deploy frontend to Vercel, point to live backend URL
+- [x] Full end-to-end test on the live deployed app (not localhost)
+- [x] Commit: `chore: deployment config`
 
 ## Phase 9 — Final Docs & Submission (Day 3, final hours)
 

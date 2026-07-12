@@ -27,17 +27,8 @@ interface DataTableProps<TData> {
 
 const ROW_HEIGHT = 49;
 
-export function DataTable<TData>({
-  columns,
-  data,
-  maxHeight = "420px",
-}: DataTableProps<TData>) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
+export function DataTable<TData>({ columns, data, maxHeight = "420px" }: DataTableProps<TData>) {
+  const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
   const parentRef = useRef<HTMLDivElement>(null);
   const rows = table.getRowModel().rows;
 
@@ -51,13 +42,12 @@ export function DataTable<TData>({
   const virtualRows = rowVirtualizer.getVirtualItems();
   const totalSize = rowVirtualizer.getTotalSize();
   const paddingTop = virtualRows.length > 0 ? virtualRows[0].start : 0;
-  const paddingBottom =
-    virtualRows.length > 0 ? totalSize - virtualRows[virtualRows.length - 1].end : 0;
+  const paddingBottom = virtualRows.length > 0 ? totalSize - virtualRows[virtualRows.length - 1].end : 0;
 
   return (
     <div ref={parentRef} className={cn(cardSurface, "overflow-auto")} style={{ maxHeight }}>
       <Table>
-        <TableHeader className="sticky top-0 z-10 bg-muted/50 backdrop-blur-sm">
+        <TableHeader className="sticky top-0 z-10 bg-muted/60 backdrop-blur-sm">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-transparent">
               {headerGroup.headers.map((header) => (
@@ -81,7 +71,13 @@ export function DataTable<TData>({
               {virtualRows.map((virtualRow) => {
                 const row = rows[virtualRow.index];
                 return (
-                  <TableRow key={row.id} className="transition-colors duration-200 hover:bg-muted/40">
+                  <TableRow
+                    key={row.id}
+                    className={cn(
+                      "transition-colors duration-200 hover:bg-muted/50",
+                      virtualRow.index % 2 === 1 && "bg-muted/20"
+                    )}
+                  >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className="whitespace-nowrap py-3.5">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
